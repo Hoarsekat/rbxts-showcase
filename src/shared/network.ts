@@ -1,8 +1,12 @@
 import { Networking } from "@flamework/networking";
 
-interface ClientToServerEvents {}
+interface ClientToServerEvents {
+	start(): void;
+}
 
-interface ServerToClientEvents {}
+interface ServerToClientEvents {
+	broadcast(actions: unknown): void;
+}
 
 interface ClientToServerFunctions {}
 
