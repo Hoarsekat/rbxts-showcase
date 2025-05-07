@@ -28,11 +28,34 @@ export class DataService implements OnStart {
 	onStart() {
 		Players.PlayerAdded.Connect((player) => {
 			this.loadPlayerData(player);
+			this.createLeaderstats(player);
 		});
 
 		for (const player of Players.GetPlayers()) {
 			this.loadPlayerData(player);
+			this.createLeaderstats(player);
 		}
+	}
+
+	private createLeaderstats(player: Player) {
+		const leaderstats = new Instance("Folder", player);
+		leaderstats.Name = "leaderstats";
+
+		const coins = new Instance("NumberValue", leaderstats);
+		coins.Name = "Coins";
+
+		const stage = new Instance("NumberValue", leaderstats);
+		stage.Name = "Stage";
+
+		const unsubscribe = store.subscribe(selectPlayerData(player.Name), (save) => {
+			if (typeOf(save?.balance) === "number" && typeOf(save?.stage) === "number") {
+				coins.Value = (save?.balance ?? 0) as number;
+				stage.Value = (save?.stage ?? 0) as number;
+			}
+		});
+		Players.PlayerRemoving.Connect((player) => {
+			if (player === player) unsubscribe();
+		});
 	}
 
 	async loadDefaultData(player: Player) {
